@@ -53,7 +53,10 @@ Las imágenes **no tienen nombre descriptivo**, por lo que antes de implementar 
 - Si una imagen muestra un componente que ya existe en el proyecto, verificá que el componente existente coincida con la imagen antes de crear uno nuevo.
 - Respetá los breakpoints. Si no están explícitos en las imágenes, usá:
   - `sm: 640px` · `md: 768px` · `lg: 1024px` · `xl: 1280px`
-- Todo componente nuevo debe ser validado visualmente contra ambas carpetas antes de considerarse terminado.
+- Las imágenes son una **referencia de estética**, no un inventario de componentes obligatorios. No es necesario implementar todo lo que aparece en las imágenes.
+- Si el componente que necesitás aparece en las imágenes de referencia, implementalo respetando ese diseño.
+- Si el componente que necesitás **no aparece** en las imágenes, inventalo respetando la estética general de la página: misma paleta de colores, misma tipografía, mismo lenguaje visual. El objetivo es que se vea parte del mismo sistema de diseño.
+- No bloquees una tarea porque un componente no tenga imagen de referencia — usá el criterio visual del resto de la página como guía.
 
 ---
 
@@ -760,7 +763,7 @@ describe('Button', () => {
 
 ## ✅ Checklist antes de cada commit
 
-- [ ] Analizadas las imágenes de `public/preview/desktop/` y `public/preview/mobile/` antes de crear componentes visuales
+- [ ] Si el componente tiene imagen de referencia en `public/preview/`, el diseño implementado respeta esa estética
 - [ ] No hay bloques JSX repetidos — extraídos a componentes `ui/` reutilizables
 - [ ] Las importaciones van directo al archivo fuente, no a barrel files
 - [ ] Todos los archivos modificados o creados no tienen imports sin usar (iconos, componentes, tipos, hooks)

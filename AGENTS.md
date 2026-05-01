@@ -646,10 +646,51 @@ export async function generateMetadata({ params }: { params: { id: string } }) {
 
 ---
 
+### proxy.ts — reemplaza a middleware.ts
+
+A partir de Next.js 16, `middleware.ts` está **deprecado**. El archivo correcto es `proxy.ts` con la función exportada como `proxy`.
+
+```
+# Ubicación — mismo nivel que app/ o pages/
+src/
+└── proxy.ts   ✅  (no middleware.ts ❌)
+```
+
+```ts
+// ✅ proxy.ts — Next.js 16
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
+
+export function proxy(request: NextRequest) {
+  // solo lógica de red: rewrites, redirects, headers
+  // NO: queries a DB, autenticación compleja, lógica de negocio
+  return NextResponse.redirect(new URL('/home', request.url));
+}
+
+export const config = {
+  matcher: ['/dashboard/:path*', '/perfil/:path*'],
+};
+```
+
+**Qué va en `proxy.ts` y qué no:**
+
+| ✅ Correcto en proxy.ts | ❌ No va en proxy.ts |
+|---|---|
+| Redirects basados en la URL | Queries a base de datos |
+| Rewrites de rutas | Autenticación compleja con sesión |
+| Modificar headers de request/response | Lógica de negocio |
+| Chequeos optimistas de permisos (cookie existe / no existe) | Hashing, encriptado |
+| A/B testing por URL | Llamadas a APIs externas pesadas |
+
+La autenticación real (verificar token, validar sesión) va en **Server Actions** o **Route Handlers**, no en `proxy.ts`.
+
+---
+
 ### Resumen de qué va dónde
 
 | Tarea | Dónde |
 |---|---|
+| Interceptar requests, redirects, rewrites | `src/proxy.ts` con función `proxy()` |
 | Obtener datos para una página | Server Component (`async/await` directo) |
 | Crear / actualizar / eliminar datos | Server Action en `src/actions/` |
 | Lógica de estado local e interactividad | Client Component + custom hook |
@@ -755,6 +796,8 @@ describe('Button', () => {
 - ❌ No uses `'use client'` en un componente padre cuando solo el hijo lo necesita — empujalo hacia abajo.
 - ❌ No accedas a variables de entorno privadas en Client Components — solo en Server Components o Server Actions.
 - ❌ No uses patrones del Pages Router (`getServerSideProps`, `getStaticProps`) — este proyecto usa App Router.
+- ❌ No uses `middleware.ts` — está deprecado en Next.js 16. Usá `proxy.ts` con la función exportada como `proxy`.
+- ❌ No pongas lógica de negocio, queries a DB ni autenticación compleja en `proxy.ts` — solo redirects, rewrites y modificación de headers.
 - ❌ No repitas bloques JSX similares (campos de formulario, cards, items) — extraé a un componente en `ui/`.
 - ❌ No importes desde barrel files (`index.ts`) que reexportan muchas cosas — importá directo al archivo fuente.
 - ❌ No uses librerías de servidor (`bcryptjs`, `nodemailer`, `sharp`) en componentes `'use client'` — usá Server Actions o Route Handlers.

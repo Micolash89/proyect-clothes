@@ -30,6 +30,10 @@ export const UI_LABELS = {
   CONFIRM_ORDER: 'Confirmar pedido',
   PLACE_ORDER: 'Realizar pedido',
 
+  // Auth
+  EMAIL: 'Email',
+  PASSWORD: 'Contraseña',
+
   // Admin
   LOGIN: 'Ingresar',
   LOGOUT: 'Cerrar sesión',

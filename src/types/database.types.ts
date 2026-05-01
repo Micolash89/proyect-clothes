@@ -10,10 +10,12 @@ export interface Product {
   _id?: ObjectId;
   name: string;
   category: string;
-  description: string;
+  description?: string; // Opcional
   imageUrl: string; // Imgur URL
-  price?: number; // Opcional si mostrar precio está desactivado globalmente
+  basePrice: number; // Precio base
+  discountPrice?: number; // Precio con descuento (opcional)
   sizes: string[]; // ['S', 'M', 'L', 'XL', ...]
+  showPrice: boolean; // Mostrar precio en la tienda
   isActive: boolean; // Baja lógica: no eliminar físicamente
   createdAt: Date;
   updatedAt: Date;
@@ -24,6 +26,7 @@ export interface PredefinedDesign {
   _id?: ObjectId;
   name: string;
   category: string;
+  description?: string; // Opcional
   imageUrl: string; // Imgur URL
   isActive: boolean;
   createdAt: Date;
@@ -33,9 +36,10 @@ export interface PredefinedDesign {
 // GALERÍA (TRABAJOS ANTERIORES)
 export interface GalleryItem {
   _id?: ObjectId;
+  title: string; // Campo title en lugar de description
+  description?: string; // Opcional
   imageUrl: string; // Imgur URL
-  description: string;
-  category: string;
+  displayOrder?: number; // Orden de visualización
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
@@ -44,10 +48,11 @@ export interface GalleryItem {
 // PEDIDOS
 export interface OrderItem {
   productId: string; // MongoDB ObjectId as string
-  productName: string;
-  size: string;
   quantity: number;
-  unitPrice?: number; // Precio en momento de pedido (para historial)
+  size: string;
+  selectedDesignId?: string; // ID del diseño predefinido
+  customDesignUrl?: string; // URL del diseño personalizado
+  notes?: string; // Notas del item
 }
 
 export interface Order {
@@ -56,22 +61,15 @@ export interface Order {
   customerName: string;
   customerWhatsapp: string;
   items: OrderItem[];
-  designMode: 'predefined' | 'custom';
-  predefinedDesignId?: string; // Si es predefinido
-  customDesignDescription?: string; // Si es personalizado
-  customLogoPosition?: string; // Posición del logo (ej: "pecho", "espalda")
-  status: 'pendiente' | 'señado' | 'en_produccion' | 'entregado' | 'cancelado';
-  userId?: string; // Para futura autenticación de clientes
-  totalPrice?: number; // Precio total del pedido (si se mostró)
-  notes?: string; // Notas del admin
+  notes?: string; // Notas generales del pedido
+  status: string; // Estado del pedido (usando string para compatibilidad con ORDER_STATUS)
   createdAt: Date;
   updatedAt: Date;
 }
 
 // CONFIGURACIÓN GLOBAL (SINGLETON)
 export interface AppSettings {
-  _id?: ObjectId;
-  _id_override?: string; // 'global_settings'
+  _id?: string | ObjectId; // 'global_settings' como ID string
   showPrices: boolean; // Toggle de visibilidad de precios
   whatsappUrl: string; // URL de contacto WhatsApp
   instagramUrl?: string;
@@ -83,8 +81,7 @@ export interface AppSettings {
 
 // CONTADOR PARA NÚMEROS DE PEDIDO
 export interface Counter {
-  _id?: ObjectId;
-  _id_override?: string; // 'orderCode'
+  _id?: string | ObjectId; // 'orderCode' como ID string
   sequence: number; // Próximo número a usar
   createdAt: Date;
   updatedAt: Date;

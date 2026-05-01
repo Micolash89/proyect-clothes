@@ -1,4 +1,3 @@
-import { ReactNode } from 'react';
 import Link from 'next/link';
 import { ROUTES } from '@/constants/routes.constants';
 import { UI_LABELS } from '@/constants/ui.constants';

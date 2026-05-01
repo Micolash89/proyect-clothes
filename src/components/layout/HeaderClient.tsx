@@ -12,7 +12,7 @@ import { UI_LABELS } from '@/constants/ui.constants';
  * - Mobile menu trigger (future)
  */
 export function HeaderClient() {
-  const { theme, setTheme, resolvedTheme } = useTheme();
+  const { setTheme, resolvedTheme } = useTheme();
 
   const toggleTheme = () => {
     setTheme(resolvedTheme === 'dark' ? 'light' : 'dark');

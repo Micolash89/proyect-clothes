@@ -47,13 +47,33 @@ export class ProductService {
   /**
    * Listar productos con filtros
    */
-  async listProducts(filters?: ProductFilters): Promise<{ items: Product[]; total: number }> {
+  async listProducts(filters?: ProductFilters): Promise<{ items: Product[]; total: number; hasNextPage: boolean }> {
     const collection = this.db.collection<Product>(DB_COLLECTIONS.PRODUCTS);
 
     const query: Record<string, unknown> = { isActive: true };
 
+    // Filtro por categoría
     if (filters?.category && filters.category !== 'all') {
       query.category = filters.category;
+    }
+
+    // Filtro por búsqueda en nombre y descripción
+    if (filters?.search) {
+      query.$or = [
+        { name: { $regex: filters.search, $options: 'i' } },
+        { description: { $regex: filters.search, $options: 'i' } },
+      ];
+    }
+
+    // Filtro por rango de precio
+    if (filters?.minPrice !== undefined || filters?.maxPrice !== undefined) {
+      query.basePrice = {};
+      if (filters?.minPrice !== undefined) {
+        (query.basePrice as Record<string, number>).$gte = filters.minPrice;
+      }
+      if (filters?.maxPrice !== undefined) {
+        (query.basePrice as Record<string, number>).$lte = filters.maxPrice;
+      }
     }
 
     const total = await collection.countDocuments(query);
@@ -66,16 +86,20 @@ export class ProductService {
     };
 
     const sort = sortMap[filters?.sortBy ?? 'newest'];
-    const skip = ((filters?.page ?? 1) - 1) * 12;
+    const pageSize = filters?.pageSize ?? 12;
+    const skip = ((filters?.page ?? 1) - 1) * pageSize;
 
     const items = await collection
       .find(query)
       .sort(sort)
       .skip(skip)
-      .limit(12)
+      .limit(pageSize + 1) // +1 para detectar hasNextPage
       .toArray();
 
-    return { items, total };
+    const hasNextPage = items.length > pageSize;
+    const paginatedItems = items.slice(0, pageSize);
+
+    return { items: paginatedItems, total, hasNextPage };
   }
 
   /**

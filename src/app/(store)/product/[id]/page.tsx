@@ -101,16 +101,20 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
               </div>
             </div>
 
-            {/* Product options (size, quantity, add to cart) */}
-            <div className="rounded-lg border border-border p-6">
-              <ProductOptions
-                availableSizes={product.sizes}
-                onAddToCart={(size, quantity) => {
-                  console.log(`Agregando ${quantity}x ${product.name} - Talle: ${size}`);
-                  // TODO: Implementar carrito en próximos pasos
-                }}
-              />
-            </div>
+              {/* Product options (size, quantity, add to cart) */}
+              <div className="rounded-lg border border-border p-6">
+                <ProductOptions
+                  product={{
+                    _id: product._id,
+                    name: product.name,
+                    imageUrl: product.imageUrl,
+                    basePrice: product.basePrice,
+                    discountPrice: product.discountPrice,
+                    showPrice: product.showPrice,
+                  }}
+                  availableSizes={product.sizes}
+                />
+              </div>
 
             {/* Features / Info cards */}
             <div className="grid grid-cols-2 gap-4">

@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import { ThemeProvider } from '@/components/providers/ThemeProvider';
+import { CartProvider } from '@/components/providers/CartProvider';
 import { Toaster } from '@/components/ui/toaster';
+import { Toaster as SonnerToaster } from 'sonner';
 import './globals.css';
 
 /**
@@ -52,8 +54,11 @@ export default function RootLayout({
       </head>
       <body className="flex min-h-full flex-col bg-background text-foreground">
         <ThemeProvider defaultTheme="system" storageKey="app-theme">
-          {children}
-          <Toaster />
+          <CartProvider>
+            {children}
+            <Toaster />
+            <SonnerToaster />
+          </CartProvider>
         </ThemeProvider>
       </body>
     </html>
